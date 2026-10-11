@@ -165,13 +165,9 @@ let pollingInterval = null;
 // it loads — see loadServiceCatalog().
 let SERVICES = [
   {id:'WITHDRAW',    emoji:'💵', label:'Withdraw Cash',     hasPhone:true,  hasAmount:true,  amounts:['100','200','500','1000','2000'], instant:true},
-  {id:'CASH_IN',     emoji:'💳', label:'Cash In',           hasPhone:true,  hasAmount:true,  amounts:['500','1000','2000','5000'],      instant:false},
   {id:'SEND_MONEY',  emoji:'📤', label:'Send Money',        hasPhone:true,  hasAmount:true,  amounts:['50','100','200','500','1000'],   instant:false},
   {id:'AIRTIME',     emoji:'📡', label:'MTN Airtime',       hasPhone:true,  hasAmount:true,  amounts:['10','20','50','100','200'],      instant:false},
   {id:'MERCHANT_PAY',emoji:'🏪', label:'Eswatini Mobile',   hasPhone:true,  hasAmount:true,  amounts:['50','100','500','1000'],         instant:false},
-  {id:'DATA',        emoji:'📶', label:'Data Bundle',       hasPhone:false, hasAmount:false, amounts:[],                                 instant:false},
-  {id:'ESW_AIRTIME', emoji:'🟡', label:'Topup Airtime MTN', hasPhone:true,  hasAmount:true,  amounts:['20','50','100','200','500'],     instant:false},
-  {id:'BILLS',       emoji:'🧾', label:'Pay Bills',         hasPhone:true,  hasAmount:true,  amounts:['100','500','1000','2000'],       instant:false},
 ];
 
 // ═════════════════════════════════════════════
@@ -237,7 +233,8 @@ async function loadServiceCatalog() {
         // this mirrors RemoteJobService.CUSTOMER_FACING_SERVICES exactly, but
         // it's a presentation-layer filter only: the phone enforces the real
         // whitelist again itself regardless of what this page sends.
-        const filtered = list.filter(s => s.isCustomerFacing !== false)
+        const HIDDEN_IDS = ['CASH_IN', 'DATA', 'ESW_AIRTIME', 'BILLS'];
+        const filtered = list.filter(s => s.isCustomerFacing !== false && !HIDDEN_IDS.includes(s.id))
           .map(s => ({...s, instant: s.id === 'WITHDRAW'}));
         if (filtered.length > 0) SERVICES = filtered;
       }
