@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0D9488">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MoMo — Request a Service</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--primary:#0D9488;--primary-dark:#0B7A70;--bg:#0B2A4A;--card:#11273F;--card2:#16324A;--white:#FFFFFF;--muted:#93A6BD;--green:#22C55E;--red:#E23B3B;--amber:#B45309;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,0.25)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--white);min-height:100dvh;display:flex;flex-direction:column}
+.screen{display:none;flex-direction:column;min-height:100dvh}
+.screen.active{display:flex}
+.header{background:var(--primary);color:#042F2A;padding:16px 18px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);flex-shrink:0}
+.header-logo{width:38px;height:38px;background:var(--bg);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.header h1{font-size:17px;font-weight:700;line-height:1.2}
+.header p{font-size:11px;opacity:.75;margin-top:1px}
+.header-back{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px 4px 0;color:#042F2A}
+.body{flex:1;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.bottom-bar{padding:12px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:#0F2236;flex-shrink:0}
+
+.config-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.config-card h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px}
+.form-label{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.form-input{width:100%;padding:13px 14px;border-radius:8px;border:1.5px solid #2C4A66;background:#0F2236;color:var(--white);font-size:15px;margin-bottom:12px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--primary)}
+.form-input::placeholder{color:#5B7085}
+
+.welcome-banner{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center}
+.welcome-banner .big{font-size:34px;margin-bottom:6px}
+.welcome-banner h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.welcome-banner p{font-size:12px;color:var(--muted);line-height:1.5}
+
+.section-label{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;text-transform:uppercase}
+.service-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.service-card{position:relative;background:var(--card);border-radius:var(--radius);padding:16px 13px;cursor:pointer;border:2px solid transparent;transition:border-color .15s,background .12s;-webkit-user-select:none;user-select:none}
+.service-card:active,.service-card.selected{border-color:var(--primary);background:var(--card2)}
+.service-card .emoji{font-size:26px;margin-bottom:6px;display:block}
+.service-card .label{font-size:13px;font-weight:600;line-height:1.3}
+.service-card .badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;letter-spacing:.3px}
+.badge-instant{background:rgba(34,197,94,.18);color:var(--green)}
+.badge-approval{background:rgba(180,83,9,.22);color:#F3B35C}
+
+.job-form{background:var(--card);border-radius:var(--radius);padding:15px;margin-top:14px;display:none}
+.job-form.visible{display:block}
+.quick-amounts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.chip{padding:6px 13px;border-radius:20px;border:1.5px solid #2C4A66;background:transparent;color:var(--white);font-size:13px;cursor:pointer;transition:all .1s}
+.chip:active,.chip.active{border-color:var(--primary);background:var(--primary);color:#042F2A}
+
+.btn{width:100%;padding:15px;border-radius:var(--radius);border:none;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#042F2A}
+.btn-secondary{background:var(--card);color:var(--white);border:1.5px solid #2C4A66}
+.btn-sm{padding:10px 14px;font-size:14px;border-radius:8px}
+
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;padding:48px 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:48px;height:48px;border:4px solid #22344A;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+.spinner-status{color:var(--muted);font-size:14px;text-align:center;line-height:1.6}
+.wait-note{margin-top:10px;background:var(--card);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+
+.result-icon{font-size:64px;text-align:center;margin:28px 0 10px}
+.result-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px}
+.result-subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:18px}
+.result-response{background:var(--card);border-radius:var(--radius);padding:15px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;min-height:50px;border:1.5px solid #22344A}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22344A;color:var(--white);padding:9px 18px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap;box-shadow:var(--shadow)}
+.toast.show{opacity:1}
+
+@media(max-width:340px){.service-card .emoji{font-size:22px}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SCREEN: Config (fallback only — normally skipped via the QR link) ═══════════ -->
+<div id="screen-config" class="screen active">
+  <div class="header">
+    <div class="header-logo">🏪</div>
+    <div><h1>MoMo</h1><p>Scan the shop's QR to continue</p></div>
+  </div>
+  <div class="body">
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:18px">
+      This page is meant to be opened from the shop's QR code or link. If you were sent here
+      directly, paste the link below.
+    </p>
+    <div class="config-card">
+      <h3>📎 Paste the shop's link</h3>
+      <input id="cfg-link" class="form-input" type="url" placeholder="https://…/momo-customer/#config=…" autocomplete="off">
+      <button class="btn btn-secondary btn-sm" onclick="parseSetupLink()" style="width:auto">Continue ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN: Services ═══════════ -->
+<div id="screen-services" class="screen">
+  <div class="header">
+    <div class="header-logo">🏪</div>
+    <div><h1 id="hdr-title">What would you like?</h1><p>No password needed</p></div>
+  </div>
+  <div class="body">
+    <div class="welcome-banner">
+      <div class="big">👋</div>
+      <h2>Pick a service below</h2>
+      <p>Cash withdrawals go straight through. Everything else is sent to the shop
+         owner to approve first — you'll see progress on the next screen.</p>
+    </div>
+    <div class="section-label">Select a service</div>
+    <div class="service-grid" id="service-grid"></div>
+    <div class="job-form" id="job-form">
+      <div id="form-fields"></div>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitJob()">Send Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN: Processing / Waiting ═══════════ -->
+<div id="screen-processing" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="cancelJob()">✕</button>
+    <div><h1 id="proc-title">Please wait…</h1><p id="proc-sub">Sending your request</p></div>
+  </div>
+  <div class="body">
+    <div class="spinner-wrap">
+      <div class="spinner"></div>
+      <div class="spinner-status" id="proc-status">Sending your request…</div>
+      <div class="wait-note" id="proc-note" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN: Result ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="header">
+    <div class="header-logo" id="res-logo">✅</div>
+    <div><h1 id="res-title">Done</h1><p id="res-svc">Service</p></div>
+  </div>
+  <div class="body">
+    <div class="result-icon" id="res-icon">✅</div>
+    <div class="result-title" id="res-status">Complete</div>
+    <div class="result-subtitle" id="res-time"></div>
+    <div id="res-note" style="display:none;font-size:12px;color:var(--muted);background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.5"></div>
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:6px 0 6px">Message</div>
+    <div class="result-response" id="res-response"></div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-primary" onclick="showServices()">+ New Request</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ═════════════════════════════════════════════
+// STATE
+// ═════════════════════════════════════════════
+let cfg = {};
+let sessionToken = '';
+let selectedService = null;
+let currentJobId = null;
+let pollingInterval = null;
+
+// Default/fallback list — customer-facing services only (no FLOAT_CHECK /
+// AGENT_REPORT, those are owner/agent-only diagnostics). Replaced by the
+// phone's real published catalog (filtered to isCustomerFacing) as soon as
+// it loads — see loadServiceCatalog().
+let SERVICES = [
+  {id:'WITHDRAW',    emoji:'💵', label:'Withdraw Cash',     hasPhone:true,  hasAmount:true,  amounts:['100','200','500','1000','2000'], instant:true},
+  {id:'CASH_IN',     emoji:'💳', label:'Cash In',           hasPhone:true,  hasAmount:true,  amounts:['500','1000','2000','5000'],      instant:false},
+  {id:'SEND_MONEY',  emoji:'📤', label:'Send Money',        hasPhone:true,  hasAmount:true,  amounts:['50','100','200','500','1000'],   instant:false},
+  {id:'AIRTIME',     emoji:'📡', label:'MTN Airtime',       hasPhone:true,  hasAmount:true,  amounts:['10','20','50','100','200'],      instant:false},
+  {id:'MERCHANT_PAY',emoji:'🏪', label:'Eswatini Mobile',   hasPhone:true,  hasAmount:true,  amounts:['50','100','500','1000'],         instant:false},
+  {id:'DATA',        emoji:'📶', label:'Data Bundle',       hasPhone:false, hasAmount:false, amounts:[],                                 instant:false},
+  {id:'ESW_AIRTIME', emoji:'🟡', label:'Topup Airtime MTN', hasPhone:true,  hasAmount:true,  amounts:['20','50','100','200','500'],     instant:false},
+  {id:'BILLS',       emoji:'🧾', label:'Pay Bills',         hasPhone:true,  hasAmount:true,  amounts:['100','500','1000','2000'],       instant:false},
+];
+
+// ═════════════════════════════════════════════
+// CRYPTO — Web Crypto API (no libraries needed), same scheme as the phone's
+// RemoteJobSecurityUtil and the employee-pwa page.
+// ═════════════════════════════════════════════
+async function hmacSha256Hex(msg, key) {
+  const enc = new TextEncoder();
+  const k = await crypto.subtle.importKey('raw', enc.encode(key),
+    {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', k, enc.encode(msg));
+  return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function makeSessionToken(secret) {
+  return hmacSha256Hex('session:' + Math.floor(Date.now()/3600000), secret);
+}
+async function signJob(jobId, serviceType, postedAt, secret) {
+  return hmacSha256Hex(`${jobId}:${serviceType}:${postedAt}`, secret);
+}
+function makeJobId() {
+  const a = new Uint8Array(12); crypto.getRandomValues(a);
+  return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ═════════════════════════════════════════════
+// SCREENS
+// ═════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showServices() {
+  selectedService = null; clearJobForm(); showScreen('services');
+}
+
+// ═════════════════════════════════════════════
+// CONFIG — there is no PIN/login step at all here. The only thing a visitor
+// needs is the dbUrl/deviceId/secret triple carried in the QR link's hash.
+// ═════════════════════════════════════════════
+function applyConfig(p) {
+  cfg = {dbUrl: p.dbUrl || '', deviceId: p.deviceId || '', secret: p.secret || ''};
+}
+
+function parseSetupLink() {
+  const link = document.getElementById('cfg-link').value.trim();
+  const idx = link.indexOf('#config=');
+  if (idx === -1) { toast('No config found in that link'); return; }
+  try {
+    const b64 = link.slice(idx+8).replace(/-/g,'+').replace(/_/g,'/');
+    const json = decodeURIComponent(escape(atob(b64)));
+    applyConfig(JSON.parse(json));
+    startUp();
+  } catch(e) { toast('Could not read that link — is it complete?'); }
+}
+
+async function loadServiceCatalog() {
+  try {
+    const url = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_jobs/${cfg.deviceId}/config/services.json`;
+    const res = await fetch(url);
+    if (res.ok) {
+      const list = await res.json();
+      if (Array.isArray(list) && list.length > 0) {
+        // Only ever show services the phone itself marked customer-facing —
+        // this mirrors RemoteJobService.CUSTOMER_FACING_SERVICES exactly, but
+        // it's a presentation-layer filter only: the phone enforces the real
+        // whitelist again itself regardless of what this page sends.
+        const filtered = list.filter(s => s.isCustomerFacing !== false)
+          .map(s => ({...s, instant: s.id === 'WITHDRAW'}));
+        if (filtered.length > 0) SERVICES = filtered;
+      }
+    }
+  } catch (e) {
+    // Offline or unreachable — keep the built-in defaults above.
+  }
+}
+
+// ═════════════════════════════════════════════
+// SERVICES
+// ═════════════════════════════════════════════
+function buildServiceGrid() {
+  const grid = document.getElementById('service-grid');
+  grid.innerHTML = '';
+  SERVICES.forEach(svc => {
+    const c = document.createElement('div');
+    c.className = 'service-card'; c.id = 'card-'+svc.id;
+    const badge = svc.instant
+      ? '<span class="badge badge-instant">Instant</span>'
+      : '<span class="badge badge-approval">Needs approval</span>';
+    c.innerHTML = `${badge}<span class="emoji">${svc.emoji}</span><div class="label">${svc.label}</div>`;
+    c.onclick = () => selectService(svc);
+    grid.appendChild(c);
+  });
+}
+
+function selectService(svc) {
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('card-'+svc.id).classList.add('selected');
+  selectedService = svc;
+  buildJobForm(svc);
+}
+
+function buildJobForm(svc) {
+  const form = document.getElementById('job-form');
+  const fields = document.getElementById('form-fields');
+  let html = '';
+  if (!svc.hasPhone && !svc.hasAmount) {
+    html = `<p style="color:var(--muted);font-size:13px;margin-bottom:12px">No details needed for <b style="color:var(--white)">${svc.label}</b>. Tap Send to continue.</p>`;
+  } else {
+    if (svc.hasPhone) {
+      html += `<div class="form-label">Your Phone Number</div>
+      <input id="field-phone" class="form-input" type="tel" placeholder="+268 76 XXX XXX" inputmode="tel">`;
+    }
+    if (svc.hasAmount) {
+      html += `<div class="form-label">Amount (SZL)</div>
+      <div class="quick-amounts">${svc.amounts.map(a=>`<button class="chip" onclick="setAmt('${a}',this)">E${a}</button>`).join('')}</div>
+      <input id="field-amount" class="form-input" type="number" placeholder="Enter amount" inputmode="decimal" min="0">`;
+    }
+  }
+  fields.innerHTML = html; form.classList.add('visible');
+  setTimeout(()=>form.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+}
+
+function clearJobForm() {
+  document.getElementById('job-form').classList.remove('visible');
+  document.getElementById('form-fields').innerHTML = '';
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+}
+
+function setAmt(val, btn) {
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  const inp = document.getElementById('field-amount');
+  if (inp) inp.value = val;
+}
+
+// ═════════════════════════════════════════════
+// SUBMIT
+// ═════════════════════════════════════════════
+async function submitJob() {
+  if (!selectedService) { toast('Select a service first'); return; }
+
+  const phone  = document.getElementById('field-phone')?.value.trim().replace(/\s/g,'') || '';
+  const amount = document.getElementById('field-amount')?.value.trim() || '';
+
+  if (selectedService.hasPhone && !phone) { toast('Enter your phone number'); return; }
+  if (selectedService.hasAmount && !amount) { toast('Enter the amount'); return; }
+
+  sessionToken = await makeSessionToken(cfg.secret);
+  await dispatchJob(phone, amount);
+}
+
+async function dispatchJob(phone, amount) {
+  const jobId    = makeJobId();
+  const postedAt = Date.now();
+  const sig      = await signJob(jobId, selectedService.id, postedAt, cfg.secret);
+
+  const job = {
+    jobId, serviceType: selectedService.id, serviceLabel: selectedService.label,
+    customerNumber: phone, amount, postedAt,
+    signature: sig, sessionToken, status: 'pending'
+  };
+
+  document.getElementById('proc-title').textContent = selectedService.label;
+  document.getElementById('proc-sub').textContent   = 'Sending your request…';
+  document.getElementById('proc-status').textContent = 'Sending…';
+  document.getElementById('proc-note').style.display = 'none';
+  currentJobId = jobId;
+  showScreen('processing');
+
+  const url = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/pending/${jobId}.json`;
+  try {
+    const res = await fetch(url, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(job)
+    });
+    if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
+    startPolling(jobId);
+  } catch(e) {
+    showResult(false, selectedService.label, 'Could not send your request:\n' + e.message, null);
+  }
+}
+
+// ═════════════════════════════════════════════
+// POLLING — watches tuckshop_customer_jobs, not tuckshop_jobs. Statuses:
+// pending/awaiting_approval/approved/denied/auto_approved/processing/
+// done/failed/expired (see CustomerUssdJob.kt on the phone for the full
+// state machine).
+// ═════════════════════════════════════════════
+function startPolling(jobId) {
+  let attempts = 0;
+  const MAX = 200; // 200 × 2s ≈ 6.5 min — covers the 5-min approval window plus some margin
+
+  pollingInterval = setInterval(async () => {
+    attempts++;
+    try {
+      const statusUrl = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/pending/${jobId}/status.json`;
+      const sr = await fetch(statusUrl);
+      const status = await sr.json();
+
+      if (status === 'awaiting_approval') {
+        document.getElementById('proc-status').textContent = 'Waiting for the shop to approve your request…';
+        document.getElementById('proc-note').style.display = 'block';
+        document.getElementById('proc-note').textContent =
+          'This usually only takes a minute. If nobody responds within 5 minutes, ' +
+          'you\'ll be told to ask at the counter.';
+      } else if (status === 'auto_approved' || status === 'approved') {
+        document.getElementById('proc-status').textContent = 'Approved — processing on the shop\'s phone…';
+        document.getElementById('proc-note').style.display = 'none';
+      } else if (status === 'processing') {
+        document.getElementById('proc-status').textContent = 'Processing your request…';
+      } else if (status === 'denied') {
+        clearInterval(pollingInterval);
+        showResult(false, selectedService?.label||'Request', 'The shop declined this request. Please ask at the counter.', null);
+        return;
+      } else if (status === 'expired') {
+        clearInterval(pollingInterval);
+        showResult(false, selectedService?.label||'Request', 'No response in time. Please ask at the counter.', null);
+        return;
+      } else if (status === 'failed') {
+        clearInterval(pollingInterval);
+        showResult(false, selectedService?.label||'Request', 'This did not go through — please ask at the counter.', null);
+        return;
+      }
+
+      const resultUrl = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/results/${jobId}.json`;
+      const rr = await fetch(resultUrl);
+      const result = await rr.json();
+
+      if (result && result.jobId) {
+        clearInterval(pollingInterval);
+        showResult(result.success, selectedService?.label||result.serviceType,
+          result.response || result.errorMessage || 'No response received', null);
+      }
+    } catch(e) { console.warn('Poll:', e.message); }
+
+    if (attempts >= MAX) {
+      clearInterval(pollingInterval);
+      showResult(false, selectedService?.label||'Request',
+        'Timed out waiting for a response. Please ask at the counter.', null);
+    }
+  }, 2000);
+}
+
+function cancelJob() {
+  clearInterval(pollingInterval);
+  currentJobId = null;
+  showServices();
+}
+
+// ═════════════════════════════════════════════
+// RESULT
+// ═════════════════════════════════════════════
+function showResult(success, label, response, note) {
+  const icon   = success ? '✅' : '❌';
+  const status = success ? 'All Done' : 'Not Completed';
+  document.getElementById('res-logo').textContent     = icon;
+  document.getElementById('res-icon').textContent     = icon;
+  document.getElementById('res-title').textContent    = status;
+  document.getElementById('res-svc').textContent      = label;
+  document.getElementById('res-status').textContent   = status;
+  document.getElementById('res-time').textContent     = new Date().toLocaleTimeString();
+  document.getElementById('res-response').textContent = response;
+  const noteEl = document.getElementById('res-note');
+  if (note) { noteEl.style.display = 'block'; noteEl.textContent = note; }
+  else { noteEl.style.display = 'none'; }
+  showScreen('result');
+}
+
+// ═════════════════════════════════════════════
+// TOAST
+// ═════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+// ═════════════════════════════════════════════
+// STARTUP — this page carries NO persistent login, so every visit re-reads
+// the config straight from the link that was scanned/opened. Nothing is
+// cached in localStorage (there is nothing worth protecting with a lock —
+// the phone-side approval step is the real security boundary).
+// ═════════════════════════════════════════════
+async function startUp() {
+  if (!cfg.dbUrl || !cfg.deviceId || !cfg.secret) { showScreen('config'); return; }
+  await loadServiceCatalog();
+  buildServiceGrid();
+  showScreen('services');
+}
+
+(function init() {
+  const hash = location.hash;
+  if (hash.includes('#config=')) {
+    try {
+      const b64 = hash.slice(hash.indexOf('#config=')+8).replace(/-/g,'+').replace(/_/g,'/');
+      const p = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      applyConfig(p);
+      startUp();
+    } catch(e) { showScreen('config'); }
+  } else {
+    showScreen('config');
+  }
+
+  if ('serviceWorker' in navigator)
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
