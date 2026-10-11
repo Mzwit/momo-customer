@@ -3,32 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0D9488">
+<meta name="theme-color" content="#FFC107">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MoMo — Request a Service</title>
 <link rel="manifest" href="manifest.json">
 <style>
-:root{--primary:#0D9488;--primary-dark:#0B7A70;--bg:#0B2A4A;--card:#11273F;--card2:#16324A;--white:#FFFFFF;--muted:#93A6BD;--green:#22C55E;--red:#E23B3B;--amber:#B45309;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,0.25)}
+:root{--primary:#FFC107;--primary-dark:#E6A800;--bg:#FFFFFF;--black:#1A1A1A;--card:#F7F7F8;--card2:#EFEFEF;--white:#FFFFFF;--gray:#F5F5F5;--muted:#6B6B6B;--green:#1E8E3E;--red:#D32F2F;--amber:#B45309;--border:#DADADA;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--white);min-height:100dvh;display:flex;flex-direction:column}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--black);min-height:100dvh;display:flex;flex-direction:column}
 .screen{display:none;flex-direction:column;min-height:100dvh}
 .screen.active{display:flex}
-.header{background:var(--primary);color:#042F2A;padding:16px 18px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);flex-shrink:0}
-.header-logo{width:38px;height:38px;background:var(--bg);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.header{background:var(--primary);color:var(--black);padding:16px 18px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);flex-shrink:0}
+.header-logo{width:38px;height:38px;background:var(--black);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .header h1{font-size:17px;font-weight:700;line-height:1.2}
 .header p{font-size:11px;opacity:.75;margin-top:1px}
-.header-back{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px 4px 0;color:#042F2A}
+.header-back{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px 4px 0;color:var(--black)}
 .body{flex:1;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.bottom-bar{padding:12px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:#0F2236;flex-shrink:0}
-
+.bottom-bar{padding:12px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:var(--white);border-top:1px solid var(--border);flex-shrink:0}
 .config-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px}
-.config-card h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:12px}
+.config-card h3{font-size:14px;font-weight:600;color:var(--black);margin-bottom:12px}
 .form-label{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-.form-input{width:100%;padding:13px 14px;border-radius:8px;border:1.5px solid #2C4A66;background:#0F2236;color:var(--white);font-size:15px;margin-bottom:12px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.form-input{width:100%;padding:13px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--gray);color:var(--black);font-size:15px;margin-bottom:12px;outline:none;transition:border-color .15s;-webkit-appearance:none}
 .form-input:focus{border-color:var(--primary)}
-.form-input::placeholder{color:#5B7085}
+.form-input::placeholder{color:#9A9A9A}
 
 .welcome-banner{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center}
 .welcome-banner .big{font-size:34px;margin-bottom:6px}
@@ -42,34 +41,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .service-card .emoji{font-size:26px;margin-bottom:6px;display:block}
 .service-card .label{font-size:13px;font-weight:600;line-height:1.3}
 .service-card .badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;letter-spacing:.3px}
-.badge-instant{background:rgba(34,197,94,.18);color:var(--green)}
-.badge-approval{background:rgba(180,83,9,.22);color:#F3B35C}
-
+.badge-instant{background:rgba(30,142,62,.14);color:var(--green)}
+.badge-approval{background:rgba(180,83,9,.14);color:var(--amber)}
 .job-form{background:var(--card);border-radius:var(--radius);padding:15px;margin-top:14px;display:none}
 .job-form.visible{display:block}
 .quick-amounts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
-.chip{padding:6px 13px;border-radius:20px;border:1.5px solid #2C4A66;background:transparent;color:var(--white);font-size:13px;cursor:pointer;transition:all .1s}
-.chip:active,.chip.active{border-color:var(--primary);background:var(--primary);color:#042F2A}
+.chip{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--black);font-size:13px;cursor:pointer;transition:all .1s}
+.chip:active,.chip.active{border-color:var(--primary);background:var(--primary);color:var(--black)}
 
 .btn{width:100%;padding:15px;border-radius:var(--radius);border:none;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
-.btn-primary{background:var(--primary);color:#042F2A}
-.btn-secondary{background:var(--card);color:var(--white);border:1.5px solid #2C4A66}
+.btn-primary{background:var(--primary);color:var(--black)}
+.btn-secondary{background:var(--card);color:var(--black);border:1.5px solid var(--border)}
 .btn-sm{padding:10px 14px;font-size:14px;border-radius:8px}
 
 .spinner-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;padding:48px 20px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:48px;height:48px;border:4px solid #22344A;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
 .spinner-status{color:var(--muted);font-size:14px;text-align:center;line-height:1.6}
 .wait-note{margin-top:10px;background:var(--card);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
-
 .result-icon{font-size:64px;text-align:center;margin:28px 0 10px}
 .result-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px}
 .result-subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:18px}
-.result-response{background:var(--card);border-radius:var(--radius);padding:15px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;min-height:50px;border:1.5px solid #22344A}
+.result-response{background:var(--card);border-radius:var(--radius);padding:15px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;min-height:50px;border:1.5px solid var(--border)}
 
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22344A;color:var(--white);padding:9px 18px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap;box-shadow:var(--shadow)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--black);color:var(--white);padding:9px 18px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap;box-shadow:var(--shadow)}
 .toast.show{opacity:1}
 
 @media(max-width:340px){.service-card .emoji{font-size:22px}}
@@ -95,7 +92,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </div>
 </div>
-
 <!-- ═══════════════ SCREEN: Services ═══════════ -->
 <div id="screen-services" class="screen">
   <div class="header">
@@ -132,7 +128,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </div>
 </div>
-
 <!-- ═══════════════ SCREEN: Result ═══════════ -->
 <div id="screen-result" class="screen">
   <div class="header">
@@ -164,7 +159,6 @@ let sessionToken = '';
 let selectedService = null;
 let currentJobId = null;
 let pollingInterval = null;
-
 // Default/fallback list — customer-facing services only (no FLOAT_CHECK /
 // AGENT_REPORT, those are owner/agent-only diagnostics). Replaced by the
 // phone's real published catalog (filtered to isCustomerFacing) as soon as
@@ -201,7 +195,6 @@ function makeJobId() {
   const a = new Uint8Array(12); crypto.getRandomValues(a);
   return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-
 // ═════════════════════════════════════════════
 // SCREENS
 // ═════════════════════════════════════════════
@@ -233,7 +226,6 @@ function parseSetupLink() {
     startUp();
   } catch(e) { toast('Could not read that link — is it complete?'); }
 }
-
 async function loadServiceCatalog() {
   try {
     const url = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_jobs/${cfg.deviceId}/config/services.json`;
@@ -272,7 +264,6 @@ function buildServiceGrid() {
     grid.appendChild(c);
   });
 }
-
 function selectService(svc) {
   document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('card-'+svc.id).classList.add('selected');
@@ -285,7 +276,7 @@ function buildJobForm(svc) {
   const fields = document.getElementById('form-fields');
   let html = '';
   if (!svc.hasPhone && !svc.hasAmount) {
-    html = `<p style="color:var(--muted);font-size:13px;margin-bottom:12px">No details needed for <b style="color:var(--white)">${svc.label}</b>. Tap Send to continue.</p>`;
+    html = `<p style="color:var(--muted);font-size:13px;margin-bottom:12px">No details needed for <b style="color:var(--black)">${svc.label}</b>. Tap Send to continue.</p>`;
   } else {
     if (svc.hasPhone) {
       html += `<div class="form-label">Your Phone Number</div>
@@ -313,7 +304,6 @@ function setAmt(val, btn) {
   const inp = document.getElementById('field-amount');
   if (inp) inp.value = val;
 }
-
 // ═════════════════════════════════════════════
 // SUBMIT
 // ═════════════════════════════════════════════
@@ -347,7 +337,6 @@ async function dispatchJob(phone, amount) {
   document.getElementById('proc-note').style.display = 'none';
   currentJobId = jobId;
   showScreen('processing');
-
   const url = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/pending/${jobId}.json`;
   try {
     const res = await fetch(url, {
@@ -378,7 +367,6 @@ function startPolling(jobId) {
       const statusUrl = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/pending/${jobId}/status.json`;
       const sr = await fetch(statusUrl);
       const status = await sr.json();
-
       if (status === 'awaiting_approval') {
         document.getElementById('proc-status').textContent = 'Waiting for the shop to approve your request…';
         document.getElementById('proc-note').style.display = 'block';
@@ -403,7 +391,6 @@ function startPolling(jobId) {
         showResult(false, selectedService?.label||'Request', 'This did not go through — please ask at the counter.', null);
         return;
       }
-
       const resultUrl = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/results/${jobId}.json`;
       const rr = await fetch(resultUrl);
       const result = await rr.json();
@@ -447,7 +434,6 @@ function showResult(success, label, response, note) {
   else { noteEl.style.display = 'none'; }
   showScreen('result');
 }
-
 // ═════════════════════════════════════════════
 // TOAST
 // ═════════════════════════════════════════════
