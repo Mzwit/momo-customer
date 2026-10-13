@@ -22,6 +22,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .header-back{background:none;border:none;font-size:20px;cursor:pointer;padding:4px 8px 4px 0;color:var(--black)}
 .body{flex:1;padding:18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .bottom-bar{padding:12px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:var(--white);border-top:1px solid var(--border);flex-shrink:0}
+
 .config-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px}
 .config-card h3{font-size:14px;font-weight:600;color:var(--black);margin-bottom:12px}
 .form-label{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
@@ -43,6 +44,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .service-card .badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;letter-spacing:.3px}
 .badge-instant{background:rgba(30,142,62,.14);color:var(--green)}
 .badge-approval{background:rgba(180,83,9,.14);color:var(--amber)}
+
 .job-form{background:var(--card);border-radius:var(--radius);padding:15px;margin-top:14px;display:none}
 .job-form.visible{display:block}
 .quick-amounts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
@@ -61,6 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
 .spinner-status{color:var(--muted);font-size:14px;text-align:center;line-height:1.6}
 .wait-note{margin-top:10px;background:var(--card);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+
 .result-icon{font-size:64px;text-align:center;margin:28px 0 10px}
 .result-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px}
 .result-subtitle{text-align:center;font-size:13px;color:var(--muted);margin-bottom:18px}
@@ -92,6 +95,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </div>
 </div>
+
 <!-- ═══════════════ SCREEN: Services ═══════════ -->
 <div id="screen-services" class="screen">
   <div class="header">
@@ -114,7 +118,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </div>
 
-<!-- ═══════════════ SCREEN: Processing / Waiting ═══════════ -->
+<!-- ═══════════════ SCREEN: Processing / Waiting ═══════════════ -->
 <div id="screen-processing" class="screen">
   <div class="header">
     <button class="header-back" onclick="cancelJob()">✕</button>
@@ -128,6 +132,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </div>
 </div>
+
 <!-- ═══════════════ SCREEN: Result ═══════════ -->
 <div id="screen-result" class="screen">
   <div class="header">
@@ -151,7 +156,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <script>
 'use strict';
-// ═════════════════════════════════════════════
+// ════════════════════════════════════════════
 // STATE
 // ═════════════════════════════════════════════
 let cfg = {};
@@ -159,6 +164,7 @@ let sessionToken = '';
 let selectedService = null;
 let currentJobId = null;
 let pollingInterval = null;
+
 // Default/fallback list — customer-facing services only (no FLOAT_CHECK /
 // AGENT_REPORT, those are owner/agent-only diagnostics). Replaced by the
 // phone's real published catalog (filtered to isCustomerFacing) as soon as
@@ -170,7 +176,7 @@ let SERVICES = [
   {id:'MERCHANT_PAY',emoji:'🏪', label:'Eswatini Mobile',   hasPhone:true,  hasAmount:true,  amounts:['50','100','500','1000'],         instant:false},
 ];
 
-// ═════════════════════════════════════════════
+// ════════════════════════════════════════════
 // CRYPTO — Web Crypto API (no libraries needed), same scheme as the phone's
 // RemoteJobSecurityUtil and the employee-pwa page.
 // ═════════════════════════════════════════════
@@ -191,6 +197,7 @@ function makeJobId() {
   const a = new Uint8Array(12); crypto.getRandomValues(a);
   return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
+
 // ═════════════════════════════════════════════
 // SCREENS
 // ═════════════════════════════════════════════
@@ -222,6 +229,7 @@ function parseSetupLink() {
     startUp();
   } catch(e) { toast('Could not read that link — is it complete?'); }
 }
+
 async function loadServiceCatalog() {
   try {
     const url = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_jobs/${cfg.deviceId}/config/services.json`;
@@ -261,6 +269,7 @@ function buildServiceGrid() {
     grid.appendChild(c);
   });
 }
+
 function selectService(svc) {
   document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('card-'+svc.id).classList.add('selected');
@@ -301,6 +310,7 @@ function setAmt(val, btn) {
   const inp = document.getElementById('field-amount');
   if (inp) inp.value = val;
 }
+
 // ═════════════════════════════════════════════
 // SUBMIT
 // ═════════════════════════════════════════════
@@ -334,6 +344,7 @@ async function dispatchJob(phone, amount) {
   document.getElementById('proc-note').style.display = 'none';
   currentJobId = jobId;
   showScreen('processing');
+
   const url = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/pending/${jobId}.json`;
   try {
     const res = await fetch(url, {
@@ -364,6 +375,7 @@ function startPolling(jobId) {
       const statusUrl = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/pending/${jobId}/status.json`;
       const sr = await fetch(statusUrl);
       const status = await sr.json();
+
       if (status === 'awaiting_approval') {
         document.getElementById('proc-status').textContent = 'Waiting for the shop to approve your request…';
         document.getElementById('proc-note').style.display = 'block';
@@ -388,14 +400,23 @@ function startPolling(jobId) {
         showResult(false, selectedService?.label||'Request', 'This did not go through — please ask at the counter.', null);
         return;
       }
+
       const resultUrl = `${cfg.dbUrl.replace(/\/$/,'')}/tuckshop_customer_jobs/${cfg.deviceId}/results/${jobId}.json`;
       const rr = await fetch(resultUrl);
       const result = await rr.json();
 
       if (result && result.jobId) {
         clearInterval(pollingInterval);
+        // Send Money's raw USSD/carrier response text (balances, references,
+        // carrier wording) isn't something a walk-in customer needs to see —
+        // show a clean confirmation instead. Every other service, and a
+        // failed/declined Send Money, still shows the real response/reason.
+        const isSendMoney = (selectedService?.id || result.serviceType) === 'SEND_MONEY';
+        const displayResponse = (result.success && isSendMoney)
+          ? '\u2705 Transaction Approved\n\nYour money has been sent successfully.'
+          : (result.response || result.errorMessage || 'No response received');
         showResult(result.success, selectedService?.label||result.serviceType,
-          result.response || result.errorMessage || 'No response received', null);
+          displayResponse, null);
       }
     } catch(e) { console.warn('Poll:', e.message); }
 
@@ -431,6 +452,7 @@ function showResult(success, label, response, note) {
   else { noteEl.style.display = 'none'; }
   showScreen('result');
 }
+
 // ═════════════════════════════════════════════
 // TOAST
 // ═════════════════════════════════════════════
